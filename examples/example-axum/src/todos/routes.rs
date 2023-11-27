@@ -10,6 +10,7 @@ use axum::{
     http::StatusCode,
     response::IntoResponse,
 };
+use axum::extract::Query;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -90,8 +91,15 @@ struct SelectTodo {
     id: Uuid,
 }
 
+#[derive(Deserialize, Debug)]
+pub struct QueryParams {
+    pub uuid: String,
+}
+
+
 async fn get_todo(
     State(app): State<AppState>,
+    Query(params): Query<QueryParams>,
     Path(todo): Path<SelectTodo>,
 ) -> impl IntoApiResponse {
     if let Some(todo) = app.todos.lock().unwrap().get(&todo.id) {
